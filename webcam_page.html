@@ -1,108 +1,139 @@
-<html>
-
-<head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Webcam</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script
-        src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <script type="text/javascript">
-        // More API functions here:
-        // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+      // More API functions here:
+      // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-        // the link to your model provided by Teachable Machine export panel
-        const URL = "https://teachablemachine.withgoogle.com/models/mAFXEzUwz/";
+      // the link to your model provided by Teachable Machine export panel
+      const URL = "https://teachablemachine.withgoogle.com/models/mAFXEzUwz/";
 
-        let model, webcam, labelContainer, maxPredictions;
+      let model, webcam, labelContainer, maxPredictions;
 
-        // Load the image model and setup the webcam
-        async function init() {
-            const modelURL = URL + "model.json";
-            const metadataURL = URL + "metadata.json";
+      // Load the image model and setup the webcam
+      async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
 
-            // load the model and metadata
-            // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
-            // or files from your local hard drive
-            // Note: the pose library adds "tmImage" object to your window (window.tmImage)
-            model = await tmImage.load(modelURL, metadataURL);
-            maxPredictions = model.getTotalClasses();
+        // load the model and metadata
+        // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+        // or files from your local hard drive
+        // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
 
-            // Convenience function to setup a webcam
-            const flip = true; // whether to flip the webcam
-            webcam = new tmImage.Webcam(300, 300, flip); // width, height, flip
-            await webcam.setup(); // request access to the webcam
-            await webcam.play();
-            window.requestAnimationFrame(loop);
+        // Convenience function to setup a webcam
+        const flip = true; // whether to flip the webcam
+        webcam = new tmImage.Webcam(300, 300, flip); // width, height, flip
+        await webcam.setup(); // request access to the webcam
+        await webcam.play();
+        window.requestAnimationFrame(loop);
 
-            // append elements to the DOM
-            document.getElementById("webcam-container").appendChild(webcam.canvas);
-            labelContainer = document.getElementById("label-container");
-            for (let i = 0; i < maxPredictions; i++) { // and class labels
-                labelContainer.appendChild(document.createElement("div"));
-            }
+        // append elements to the DOM
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) {
+          // and class labels
+          labelContainer.appendChild(document.createElement("div"));
         }
+      }
 
-        async function loop() {
-            webcam.update(); // update the webcam frame
-            await predict();
-            window.requestAnimationFrame(loop);
-        }
+      async function loop() {
+        webcam.update(); // update the webcam frame
+        await predict();
+        window.requestAnimationFrame(loop);
+      }
 
-        // run the webcam image through the image model
-        async function predict() {
-            // predict can take in an image, video or canvas html element
-            const prediction = await model.predict(webcam.canvas);
-            for (let i = 0; i < maxPredictions; i++) {
-                const classPrediction =
-                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-                labelContainer.childNodes[i].innerHTML = classPrediction;
-            }
+      // run the webcam image through the image model
+      async function predict() {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+          const classPrediction =
+            prediction[i].className +
+            ": " +
+            prediction[i].probability.toFixed(1) * 100 +
+            "%"
+            ;
+          labelContainer.childNodes[i].innerHTML = classPrediction;
         }
+      }
     </script>
     <script>
-        window.onload = init();
+      window.onload = init();
     </script>
-</head>
+  </head>
 
-<body class="font-roboto bg-gray-100">
+  <body class="font-roboto bg-gray-100">
     <!-- Navbar -->
     <nav class="bg-white shadow-md">
-        <div class="container mx-auto p-4 flex justify-between items-center">
-            <div class="text-xl font-bold">AI Recognition Software</div>
-            <div class="hidden md:flex space-x-4">
-                <a href="index.html" class="text-gray-700 hover:text-gray-900">Home</a>
-                <a href="#" class="text-gray-700 hover:text-gray-900">About</a>
-            </div>
-            <div class="md:hidden">
-                <button id="menu-button" class="text-gray-700 focus:outline-none">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
+      <div class="container mx-auto p-4 flex justify-between items-center">
+        <div class="text-xl font-bold">AI Recognition Software</div>
+        <div class="hidden md:flex space-x-4">
+          <a href="index.html" class="text-gray-700 hover:text-gray-900"
+            >Home</a
+          >
+          <a href="#" class="text-gray-700 hover:text-gray-900">About</a>
         </div>
-        <div id="mobile-menu" class="hidden md:hidden">
-            <a href="index.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Home</a>
-            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">About</a>
+        <div class="md:hidden">
+          <button id="menu-button" class="text-gray-700 focus:outline-none">
+            <i class="fas fa-bars"></i>
+          </button>
         </div>
+      </div>
+      <div id="mobile-menu" class="hidden md:hidden">
+        <a
+          href="index.html"
+          class="block px-4 py-2 text-gray-700 hover:bg-gray-200"
+          >Home</a
+        >
+        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"
+          >About</a
+        >
+      </div>
     </nav>
     <div class="container mx-auto p-4 flex items-center justify-center">
-        <div class="w-full md:w-1/2 bg-white p-4 rounded-lg shadow-md flex flex-col items-center">
-            <div class="w-full flex justify-start">
-                <a class="underline inline-flex items-center text-sm text-gray-600 hover:text-red-300" href="index.html">
-                    <svg class="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="15 18 9 12 15 6" />
-                    </svg>
-                    Back
-                </a>
-            </div>
-            <div class="flex flex-col items-center justify-center space-y-4">
-                <div id="webcam-container" class="mt-4"></div>
-                <div id="label-container" class="mt-4 text-lg"></div>
-            </div>
+      <div
+        class="w-full md:w-1/2 bg-white p-4 rounded-lg shadow-md flex flex-col items-center"
+      >
+        <div class="w-full flex justify-start">
+          <a
+            class="underline inline-flex items-center text-sm text-gray-600 hover:text-red-300"
+            href="index.html"
+          >
+            <svg
+              class="h-5 w-5 text-gray-500"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back
+          </a>
         </div>
+        <div class="flex flex-col items-center justify-center space-y-4">
+          <div id="webcam-container" class="mt-4"></div>
+          <div id="label-container" class="mt-4 text-lg"></div>
+        </div>
+      </div>
     </div>
-</body>
-
+  </body>
 </html>
