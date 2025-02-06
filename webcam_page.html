@@ -86,15 +86,36 @@
             <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">About</a>
         </div>
     </nav>
-    <div class="container mx-auto p-4">
-        <div class="flex flex-col md:flex-row gap-4">
-            <!-- Left Panel -->
-            <div class="w-full md:w-1/2 bg-white p-4 rounded-lg shadow-md">
+    <div class="container mx-auto p-4 flex items-center justify-center">
+        <div class="w-full md:w-1/2 bg-white p-4 rounded-lg shadow-md flex flex-col items-center">
+            <a class="underline inline-flex items-center text-sm text-gray-600 hover:text-red-300" href="index.html">
+                <svg class="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+                Back
+            </a>
+            <div class="flex flex-col items-center justify-center space-y-4">
                 <div id="webcam-container" class="mt-4"></div>
                 <div id="label-container" class="mt-4 text-lg"></div>
             </div>
         </div>
     </div>
+
+    <!--<div class="min-h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-lg relative w-full max-w-md">
+            <a class="underline inline-flex items-center text-sm text-gray-600 hover:text-red-300 absolute top-4 left-4"
+                href="/welcome">
+                <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" stroke-linecap="round"
+                    stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+                    <polyline points="15 18 9 12 15 6">
+                    </polyline>
+                </svg>
+                Back
+            </a>
+
+        </div>
+    </div> -->
 </body>
 
 </html>
