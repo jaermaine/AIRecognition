@@ -15,6 +15,7 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <script type="text/javascript">
       // More API functions here:
       // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
@@ -22,7 +23,8 @@
       // the link to your model provided by Teachable Machine export panel
       const URL = "https://teachablemachine.withgoogle.com/models/mAFXEzUwz/";
 
-      let model, webcam, labelContainer, maxPredictions;
+      let model, webcam, maxPredictions;
+      let myChart;
 
       // Load the image model and setup the webcam
       async function init() {
@@ -45,11 +47,8 @@
 
         // append elements to the DOM
         document.getElementById("webcam-container").appendChild(webcam.canvas);
-        labelContainer = document.getElementById("label-container");
-        for (let i = 0; i < maxPredictions; i++) {
-          // and class labels
-          labelContainer.appendChild(document.createElement("div"));
-        }
+
+        createChart(myChart);
       }
 
       async function loop() {
@@ -62,19 +61,67 @@
       async function predict() {
         // predict can take in an image, video or canvas html element
         const prediction = await model.predict(webcam.canvas);
+        const predictionData = [];
         for (let i = 0; i < maxPredictions; i++) {
-          const classPrediction =
-            prediction[i].className +
-            ": " +
-            prediction[i].probability.toFixed(1) * 100 +
-            "%"
-            ;
-          labelContainer.childNodes[i].innerHTML = classPrediction;
+          predictionData.push({
+            className: prediction[i].className,
+            probability: prediction[i].probability.toFixed(1) * 100,
+          });
         }
+        updateChart(predictionData);
       }
-    </script>
-    <script>
-      window.onload = init();
+
+      function updateChart(predictionData) {
+        if (!myChart || !predictionData || predictionData.length === 0) return;
+        const labels = predictionData.map((item) => item.className);
+        const data = predictionData.map((item) => item.probability);
+
+        // Update chart data and labels
+        myChart.data.labels = labels;
+        myChart.data.datasets[0].data = data;
+        myChart.update();
+      }
+
+      function createChart() {
+        var ctx = document.getElementById("myChart").getContext("2d");
+        myChart = new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                data: [], // Placeholder data
+                backgroundColor: [
+                  "Red",
+                  "Blue",
+                  "Yellow",
+                  "Green",
+                  "Purple",
+                  "Orange",
+                ],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (tooltipItem) {
+                    return "No data";
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      window.onload = init;
     </script>
   </head>
 
@@ -131,7 +178,7 @@
         </div>
         <div class="flex flex-col items-center justify-center space-y-4">
           <div id="webcam-container" class="mt-4"></div>
-          <div id="label-container" class="mt-4 text-lg"></div>
+          <canvas id="myChart" style="width: 100%; max-width: 700px"></canvas>
         </div>
       </div>
     </div>
